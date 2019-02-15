@@ -8,7 +8,69 @@ using namespace std;
 
 //Prints the 3 tower structures
 int layout(stack<int> a, stack<int> b, stack<int> c){
-	
+	int size_a = a.size(), size_b = b.size(), size_c = c.size();
+	int tmp_a, tmp_b, tmp_c;
+	int i, j;
+	for(i = 0; i < 6; i++){
+		printf("\t\t\t\t");
+		if(size_a + i >= 6){
+			tmp_a = a.top();
+			a.pop();
+			for(j = 0; j<tmp_a; j++){
+				printf("\b");			
+			}
+			for(j = 0; j<tmp_a; j++){
+				printf("-");			
+			}
+			printf("|");	
+			for(j = 0; j<tmp_a; j++){
+				printf("-");			
+			}
+			printf("\t\t");
+		}	
+		else{
+			printf("|");
+			printf("\t\t");
+		}
+
+		if(size_b + i >= 6){
+			tmp_b = b.top();
+			b.pop();
+			for(j = 0; j<tmp_b; j++){
+				printf("\b");			
+			}
+			for(j = 0; j<tmp_b; j++){
+				printf("-");			
+			}
+			printf("|");	
+			for(j = 0; j<tmp_b; j++){
+				printf("-");			
+			}
+			printf("\t\t");
+		}	
+		else{
+			printf("|");
+			printf("\t\t");
+		}	
+		if(size_c + i >= 6){
+			tmp_c = c.top();
+			c.pop();
+			for(j = 0; j<tmp_c; j++){
+				printf("\b");			
+			}
+			for(j = 0; j<tmp_c; j++){
+				printf("-");			
+			}
+			printf("|");	
+			for(j = 0; j<tmp_c; j++){
+				printf("-");			
+			}
+		}	
+		else{
+			printf("|");
+		}
+		printf("\n");
+	}
 	return 0;
 }
 //Pops the top element from stack a and pushes it to stack b if allowed
