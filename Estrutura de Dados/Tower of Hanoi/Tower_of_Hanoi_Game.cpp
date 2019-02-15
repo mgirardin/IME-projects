@@ -7,13 +7,13 @@ using namespace std;
 #define CONGRATS "Parabéns, você ganhou!\n"
 
 //Prints the 3 tower structures
-int layout(stack<int> a, stack<int> b, stack<int> c){
+int layout(stack<int> a, stack<int> b, stack<int> c, int size){
 	int size_a = a.size(), size_b = b.size(), size_c = c.size();
 	int tmp_a, tmp_b, tmp_c;
 	int i, j;
-	for(i = 0; i < 6; i++){
+	for(i = 0; i < size+1; i++){
 		printf("\t\t\t\t");
-		if(size_a + i >= 6){
+		if(size_a + i >= size+1){
 			tmp_a = a.top();
 			a.pop();
 			for(j = 0; j<tmp_a; j++){
@@ -33,7 +33,7 @@ int layout(stack<int> a, stack<int> b, stack<int> c){
 			printf("\t\t");
 		}
 
-		if(size_b + i >= 6){
+		if(size_b + i >= size+1){
 			tmp_b = b.top();
 			b.pop();
 			for(j = 0; j<tmp_b; j++){
@@ -52,7 +52,7 @@ int layout(stack<int> a, stack<int> b, stack<int> c){
 			printf("|");
 			printf("\t\t");
 		}	
-		if(size_c + i >= 6){
+		if(size_c + i >= size+1){
 			tmp_c = c.top();
 			c.pop();
 			for(j = 0; j<tmp_c; j++){
@@ -88,15 +88,25 @@ bool swap_top(stack<int>& a, stack<int>& b){
 	else return false;
 }
 int main(){
-	int tout, tin, done = 0;
+	int tout, tin, done = 0, chose = 0;
 	stack<int> first, second, third;
-	for(int i=5; i>=1; i--){
+	int size;
+	while(chose == 0){
+		printf("Escolha o número de peças do seu jogo (até 6 peças):\n");
+		scanf("%d", &size);
+		if (size>=1 && size<=6){
+			chose = 1;		
+		}
+		else printf("Você não pode escolher esse número!\n");
+	}
+	
+	for(int i=size; i>=1; i--){
 		first.push(i);	
 	}
 
 	while(!done){
 		printf("\n");
-		layout(first, second, third);
+		layout(first, second, third, size);
 		printf("Digite a sua movimentação:\n");
 		scanf(" %d %d", &tout, &tin);
 
@@ -163,7 +173,7 @@ int main(){
 			done = 1;		
 		}
 	}
-	layout(first, second, third);
+	layout(first, second, third, size);
 	printf(CONGRATS);
 	return 0;
 }
