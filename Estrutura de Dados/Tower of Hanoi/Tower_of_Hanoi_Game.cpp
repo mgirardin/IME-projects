@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stack>
 using namespace std;
 
-#define NOT_VALID "Essa movimentação não é válida!\n\n"
+#define NOT_VALID "\x1B[31mEssa movimentação não é válida!\n\n \x1B[0m"
 #define VALID "Movimentação realizada!\n\n"
 #define CONGRATS "Parabéns, você ganhou!\n"
+#define KGRN  "\x1B[32m"
 
 //Prints the 3 tower structures
 int layout(stack<int> a, stack<int> b, stack<int> c, int size){
@@ -12,7 +14,7 @@ int layout(stack<int> a, stack<int> b, stack<int> c, int size){
 	int tmp_a, tmp_b, tmp_c;
 	int i, j;
 	for(i = 0; i < size+1; i++){
-		printf("\t\t\t\t");
+		printf("\a\t\t\t\t");
 		if(size_a + i >= size+1){
 			tmp_a = a.top();
 			a.pop();
@@ -97,9 +99,9 @@ int main(){
 		if (size>=1 && size<=6){
 			chose = 1;		
 		}
-		else printf("Você não pode escolher esse número!\n");
+		else printf("\x1B[31mVocê não pode escolher esse número!\n\x1B[0m");
 	}
-	
+	system("clear");
 	for(int i=size; i>=1; i--){
 		first.push(i);	
 	}
@@ -109,7 +111,7 @@ int main(){
 		layout(first, second, third, size);
 		printf("Digite a sua movimentação:\n");
 		scanf(" %d %d", &tout, &tin);
-
+		system("clear");
 		if(tin==tout || tin>3 || tout>3 || tin<1 || tout<1){	
 			printf(NOT_VALID);
 		}
@@ -173,7 +175,9 @@ int main(){
 			done = 1;		
 		}
 	}
+	printf("\n");
 	layout(first, second, third, size);
+    	printf("%s\n", KGRN);
 	printf(CONGRATS);
 	return 0;
 }
