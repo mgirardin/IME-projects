@@ -5,14 +5,59 @@ using namespace std;
 
 #define NOT_VALID "\x1B[31mEssa movimentação não é válida!\n\n \x1B[0m"
 #define VALID "Movimentação realizada!\n\n"
-#define CONGRATS "Parabéns, você ganhou!\n"
+#define CONGRATS "Parabéns, você ganhou!\n\n"
 #define KGRN  "\x1B[32m"
 
 //Prints the 3 tower structures
-int layout(stack<int> a, stack<int> b, stack<int> c, int size){
+int print_towers(stack<int>, stack<int>, stack<int>, int);
+//Pops the top element from some tower and pushes it to another one if allowed
+bool swap_top(stack<int>&, stack<int>&);
+//Asks user for the number of pieces of the game (between 1 and 6)
+int pieces_request(int* size);
+//Asks user for next movement
+int mvm_ask(int*, int*);
+//Translates int movement input from user to stack
+stack<int>* finds_tower(int, stack<int>&, stack<int>&, stack<int>&);
+//Checks if movement is valid and applies it
+int apply_mvm(int, int, stack<int>&, stack<int>&, stack<int>&);
+//Checks if towerB or towerC have all pieces of the game
+bool is_game_ended(const stack<int>&,const stack<int>&,const stack<int>&);
+//Prints congratulations and finishes game
+int end_game(const stack<int>&, const stack<int>&, const stack<int>&, bool*, int);
+
+
+int main(){
+	bool ended = false;
+	int tout, tin, size;
+	stack<int> towerA, towerB, towerC;
+
+	pieces_request(&size);
+
+	//Filling first tower
+	for(int i=size; i>=1; i--){
+		towerA.push(i);	
+	}
+
+	//Game loop
+	while(!ended){
+		print_towers(towerA, towerB, towerC, size);
+		mvm_ask(&tout, &tin);
+		apply_mvm(tin, tout, towerA, towerB, towerC);
+
+		if(is_game_ended(towerA, towerB, towerC)){
+			end_game(towerA, towerB, towerC, &ended , size);	
+		}
+	}
+	
+	return 0;
+}
+
+
+int print_towers(stack<int> a, stack<int> b, stack<int> c, int size){
 	int size_a = a.size(), size_b = b.size(), size_c = c.size();
 	int tmp_a, tmp_b, tmp_c;
 	int i, j;
+
 	for(i = 0; i < size+1; i++){
 		printf("\a\t\t\t\t");
 		if(size_a + i >= size+1){
@@ -75,7 +120,8 @@ int layout(stack<int> a, stack<int> b, stack<int> c, int size){
 	}
 	return 0;
 }
-//Pops the top element from stack a and pushes it to stack b if allowed
+
+
 bool swap_top(stack<int>& a, stack<int>& b){
 	int tmp = (a.empty() ? 0 : a.top()), tmp2 = (b.empty() ? 0 : b.top());
 	
@@ -89,95 +135,64 @@ bool swap_top(stack<int>& a, stack<int>& b){
 	}
 	else return false;
 }
-int main(){
-	int tout, tin, done = 0, chose = 0;
-	stack<int> first, second, third;
-	int size;
-	while(chose == 0){
+
+int pieces_request(int* size){
+	bool fair_choice = false;
+	while(fair_choice == false){
 		printf("Escolha o número de peças do seu jogo (até 6 peças):\n");
-		scanf("%d", &size);
-		if (size>=1 && size<=6){
-			chose = 1;		
+		scanf("%d", size);
+		if (*size>=1 && *size<=6){
+			fair_choice = true;		
 		}
 		else printf("\x1B[31mVocê não pode escolher esse número!\n\x1B[0m");
 	}
 	system("clear");
-	for(int i=size; i>=1; i--){
-		first.push(i);	
-	}
-
-	while(!done){
-		printf("\n");
-		layout(first, second, third, size);
-		printf("Digite a sua movimentação:\n");
-		scanf(" %d %d", &tout, &tin);
-		system("clear");
-		if(tin==tout || tin>3 || tout>3 || tin<1 || tout<1){	
-			printf(NOT_VALID);
-		}
-		else if(tout == 1){
-			if (tin == 2){
-				if(!swap_top(first, second)){
-					printf(NOT_VALID);
-				}
-				else{
-					printf(VALID);
-				}
-			}
-			else if (tin == 3){
-				if(!swap_top(first, third)){
-					printf(NOT_VALID);
-				}
-				else{
-					printf(VALID);
-				}
-			}		
-		}
-		else if(tout == 2){
-			if (tin == 3){
-				if(!swap_top(second, third)){
-					printf(NOT_VALID);
-				}
-				else{
-					printf(VALID);
-				}
-			}
-			else if(tin ==1) {
-				if(!swap_top(second, first)){
-					printf(NOT_VALID);
-				}
-				else{
-					printf(VALID);
-				}
-			}		
-		}
-		else{
-			if (tin == 1){
-				if(!swap_top(third, first)){
-					printf(NOT_VALID);
-				}
-				else{
-					printf(VALID);
-				}
-			}
-			else if (tin == 2){
-				if(!swap_top(third, second)){
-					printf(NOT_VALID);
-				}
-				else{
-					printf(VALID);
-				}
-			}
-					
-		}
-
-		if(first.empty() && (second.empty() || third.empty())){
-			done = 1;		
-		}
-	}
 	printf("\n");
-	layout(first, second, third, size);
-    	printf("%s\n", KGRN);
+	return 0;
+}
+
+int mvm_ask(int* tout, int* tin){
+	printf("Digite a sua movimentação:\n");
+	scanf(" %d %d", tout, tin);
+	system("clear");
+	return 0;
+}
+
+stack<int>* finds_tower(int a, stack<int>& towerA, stack<int>& towerB, stack<int>& towerC){
+	if(a == 1){
+		return &towerA;
+	}
+	else if (a == 2){
+		return &towerB;	
+	}
+	else{
+		return &towerC;	
+	}
+}
+
+int apply_mvm(int tin,int tout, stack<int>& towerA, stack<int>& towerB, stack<int>& towerC){
+	if(tin==tout || tin>3 || tout>3 || tin<1 || tout<1){	
+		printf(NOT_VALID);
+		return 0;
+	}
+
+	if(!swap_top(*(finds_tower(tout, towerA, towerB, towerC)), *(finds_tower(tin, towerA, towerB, towerC)))){
+		printf(NOT_VALID);
+	}
+	else{
+		printf(VALID);
+	}	
+	return 0;
+}
+
+bool is_game_ended(const stack<int>& towerA,const stack<int>& towerB,const stack<int>& towerC){
+	return towerA.empty() && (towerB.empty() || towerC.empty());
+}
+
+int end_game(const stack<int>& towerA, const stack<int>& towerB, const stack<int>& towerC, bool* ended, int size){
+	*ended = true;	
+	print_towers(towerA, towerB, towerC, size);
+	printf("%s\n", KGRN);
 	printf(CONGRATS);
 	return 0;
 }
