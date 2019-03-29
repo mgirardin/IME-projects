@@ -123,14 +123,14 @@ int print_towers(stack<int> a, stack<int> b, stack<int> c, int size){
 
 
 bool swap_top(stack<int>& a, stack<int>& b){
-	int tmp = (a.empty() ? 0 : a.top()), tmp2 = (b.empty() ? 0 : b.top());
+	int topA = (a.empty() ? 0 : a.top()), topB = (b.empty() ? 0 : b.top());
 	
-	if (!tmp){
+	if (!topA){
 		return false;	
 	}
-	else if(b.empty() || tmp < tmp2){
+	else if(b.empty() || topA < topB){
 		a.pop();
-		b.push(tmp);
+		b.push(topA);
 		return true;		
 	}
 	else return false;
