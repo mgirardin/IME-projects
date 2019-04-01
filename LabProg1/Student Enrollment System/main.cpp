@@ -20,9 +20,9 @@ void remove_subject();
 void insert_StudentSubject();
 //Remove a student-subject relation by student and subject id
 void remove_StudentSubject();
-//
+//Search all subjects of a student by Student Id and period
 void search_student();
-//
+//Search all students of a subject by Subject Id and period 
 void search_subject();
 //Asks for the operation type {turn system off(0), searching(1), insertion and deletion(2)} 
 void type_asker(int &type);
@@ -39,7 +39,7 @@ int main(){
 	type_asker(type);
 	//State machine loop
 	while(type){	
-		if(type==1 || type == 2) cmd_asker(type, cmd);
+		if(type == 1 || type == 2) cmd_asker(type, cmd);
 		else{
 			type = 0;
 			continue;
@@ -48,9 +48,11 @@ int main(){
 		if(type==1){
 			switch(cmd){
 				case 0:
-					search_student();
 					break;
 				case 1:
+					search_student();
+					break;
+				case 2:
 					search_subject();
 					break;
 			}
@@ -59,21 +61,23 @@ int main(){
 		if(type==2){		
 			switch(cmd){
 				case 0:
-					insert_student();
 					break;
 				case 1:
-					remove_student();
+					insert_student();
 					break;
 				case 2:
-					insert_subject();
+					remove_student();
 					break;
 				case 3:
-					remove_subject();
+					insert_subject();
 					break;
 				case 4:
-					insert_StudentSubject();
+					remove_subject();
 					break;
 				case 5:
+					insert_StudentSubject();
+					break;
+				case 6:
 					remove_StudentSubject();
 					break;
 			}
@@ -82,6 +86,7 @@ int main(){
 	}
 	return 0;
 }
+
 void insert_student(){
 	ofstream students;
 	string key, name, cpf;
@@ -305,11 +310,17 @@ void search_student(){
 		}
 	}
 	//Showing user the student's subjects in the desired period
-	cout << "Matérias do aluno " << student_key << " no período " << period << ":" << endl;
-	for(int i=0, qtd_subjects = subject_ids.size(); i<qtd_subjects; i++){
-		cout << subject_ids[i] << " - " << subject_names[i] << " - " << subject_professors[i] << " - ";
-		cout << subject_credits[i] << " créditos" << endl;
+	if(subject_ids.empty()){
+		cout << "O aluno " << student_key << " não possui matérias no período " << period << "!" << endl;
 	}
+	else{
+		cout << "Matérias do aluno " << student_key << " no período " << period << ":" << endl;
+		for(int i=0, qtd_subjects = subject_ids.size(); i<qtd_subjects; i++){
+			cout << subject_ids[i] << " - " << subject_names[i] << " - " << subject_professors[i] << " - ";
+			cout << subject_credits[i] << " créditos" << endl;
+		}
+	}
+	
 }
 void search_subject(){
 	ifstream students_subjects, students;
@@ -343,40 +354,62 @@ void search_subject(){
 		}
 	}
 	//Showing user the student's subjects in the desired period
-	cout << "Alunos da matéria " << subject_key << " no período " << period << ":" << endl;
-	for(int i=0, qtd_students = students_ids.size(); i<qtd_students; i++){
-		cout << students_ids[i] << " - " << students_names[i] << " - " << students_cpf[i] << endl;
+	if(students_ids.empty()){
+		cout << "A matéria " << subject_key << " não possui alunos registrados no período " << period << "!" << endl;
 	}
-	cout << "\n";
+	else{
+		cout << "Alunos da matéria " << subject_key << " no período " << period << ":" << endl;
+		for(int i=0, qtd_students = students_ids.size(); i<qtd_students; i++){
+			cout << students_ids[i] << " - " << students_names[i] << " - " << students_cpf[i] << endl;
+		}
+		cout << "\n";
+	}
 }
 void type_asker(int &type){
 	cout << "Digite o número do tipo de operação que deseja fazer:" << endl;
-	cout << "Digite 1 para fazer uma consulta;" << endl;
-	cout << "Digite 2 para adicionar/remover alunos ou matérias;" << endl;
-	cout << "Para sair do sistema, digite qualquer outro caracter." << endl;
-	cin >> type;
+	cout << "-Digite 1 para fazer uma consulta;" << endl;
+	cout << "-Digite 2 para adicionar/remover alunos ou matérias;" << endl;
+	cout << "-Para sair do sistema, digite qualquer outro caracter." << endl;
+	cin >> type;	
+	system("clear");
+
 }
 void cmd_asker(int type, int &cmd){
 	cout << "Digite agora o número da operação que deseja realizar:" << endl;
 	if(type==1){
-		cout << "Digite 0 para buscar as matérias de um aluno;" << endl;
-		cout << "Digite 1 para buscar os alunos de uma matéria." << endl;
-		cout << "Aperte qualquer outro caracter para retornar ao tipo de operação." << endl;
+		cout << "-Digite 1 para buscar as matérias de um aluno;" << endl;
+		cout << "-Digite 2 para buscar os alunos de uma matéria;" << endl;
+		cout << "-Para voltar ao menu de tipo de operação, digite 0." << endl;
+		cin >> cmd;
+		system("clear");
+		if(cin.fail() || (cmd!=0 && cmd!=1 && cmd!=2)){
+			cout << "Opção inválida, tente novamente." << endl; 
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cmd_asker(type, cmd);
+		}
 	}
 	else if(type==2){
-		cout << "Digite 0 para adicionar um novo aluno;" << endl;
-		cout << "Digite 1 para remover um novo aluno;" << endl;
-		cout << "Digite 2 para adicionar uma nova matéria;" << endl;
-		cout << "Digite 3 para remover uma nova matéria;" << endl;
-		cout << "Digite 4 para adicionar uma matéria para um aluno;" << endl;
-		cout << "Digite 5 para remover uma matéria de um aluno;" << endl;
-		cout <<"Aperte qualquer outro caracter para retornar ao tipo de operação;" << endl;
+		cout << "-Digite 1 para adicionar um novo aluno;" << endl;
+		cout << "-Digite 2 para remover um novo aluno;" << endl;
+		cout << "-Digite 3 para adicionar uma nova matéria;" << endl;
+		cout << "-Digite 4 para remover uma nova matéria;" << endl;
+		cout << "-Digite 5 para adicionar uma matéria para um aluno;" << endl;
+		cout << "-Digite 6 para remover uma matéria de um aluno;" << endl;
+		cout << "-Para voltar ao menu de tipo de operação, digite 0." << endl;
+		cin >> cmd;
+		system("clear");
+		if(cin.fail() || (cmd!=0 && cmd!=1 && cmd!=2 && cmd!=3 && cmd!=4 && cmd!=5 && cmd!=6)){
+			cout << "Opção inválida, tente novamente." << endl; 
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cmd_asker(type, cmd);
+		}
 	}
 	else{
 		system("clear");
-		cout << "Você digitou uma opção inválida. Tente novamente." << endl;
+		cout << "Ocorreu um erro. Entre em contato com o administrador do sistema." << endl;
 	}
-	cin >> cmd;
 }
 vector<string> parse(string l, char delim){
     vector<string> tokens;
